@@ -19,10 +19,25 @@ export function registerIssueTools(server: McpServer): void {
       issueNumber: z.number(),
     },
     async ({ owner, repo, issueNumber }) => {
-      const issue = await getIssue(octokit, { owner, repo }, issueNumber);
-      return {
-        content: [{ type: "text", text: JSON.stringify(issue, null, 2) }],
-      };
+      try {
+        console.log("Getting issue:", { owner, repo, issueNumber });
+        const issue = await getIssue(octokit, { owner, repo }, issueNumber);
+        return {
+          content: [{ type: "text", text: JSON.stringify(issue, null, 2) }],
+        };
+      } catch (error) {
+        console.error("Error in getIssue tool:", error);
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${
+                error instanceof Error ? error.message : "Unknown error"
+              }`,
+            },
+          ],
+        };
+      }
     }
   );
 
@@ -37,15 +52,30 @@ export function registerIssueTools(server: McpServer): void {
       body: z.string(),
     },
     async ({ owner, repo, issueNumber, body }) => {
-      const comment = await createIssueComment(
-        octokit,
-        { owner, repo },
-        issueNumber,
-        body
-      );
-      return {
-        content: [{ type: "text", text: JSON.stringify(comment, null, 2) }],
-      };
+      try {
+        console.log("Creating issue comment:", { owner, repo, issueNumber });
+        const comment = await createIssueComment(
+          octokit,
+          { owner, repo },
+          issueNumber,
+          body
+        );
+        return {
+          content: [{ type: "text", text: JSON.stringify(comment, null, 2) }],
+        };
+      } catch (error) {
+        console.error("Error in createIssueComment tool:", error);
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${
+                error instanceof Error ? error.message : "Unknown error"
+              }`,
+            },
+          ],
+        };
+      }
     }
   );
 
@@ -63,15 +93,30 @@ export function registerIssueTools(server: McpServer): void {
       labels: z.array(z.string()).optional(),
     },
     async ({ owner, repo, issueNumber, ...update }) => {
-      const issue = await updateIssue(
-        octokit,
-        { owner, repo },
-        issueNumber,
-        update
-      );
-      return {
-        content: [{ type: "text", text: JSON.stringify(issue, null, 2) }],
-      };
+      try {
+        console.log("Updating issue:", { owner, repo, issueNumber, update });
+        const issue = await updateIssue(
+          octokit,
+          { owner, repo },
+          issueNumber,
+          update
+        );
+        return {
+          content: [{ type: "text", text: JSON.stringify(issue, null, 2) }],
+        };
+      } catch (error) {
+        console.error("Error in updateIssue tool:", error);
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${
+                error instanceof Error ? error.message : "Unknown error"
+              }`,
+            },
+          ],
+        };
+      }
     }
   );
 
@@ -84,10 +129,25 @@ export function registerIssueTools(server: McpServer): void {
       repo: z.string(),
     },
     async ({ owner, repo }) => {
-      const issues = await listIssues(octokit, { owner, repo });
-      return {
-        content: [{ type: "text", text: JSON.stringify(issues, null, 2) }],
-      };
+      try {
+        console.log("Listing issues:", { owner, repo });
+        const issues = await listIssues(octokit, { owner, repo });
+        return {
+          content: [{ type: "text", text: JSON.stringify(issues, null, 2) }],
+        };
+      } catch (error) {
+        console.error("Error in listIssues tool:", error);
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${
+                error instanceof Error ? error.message : "Unknown error"
+              }`,
+            },
+          ],
+        };
+      }
     }
   );
 }

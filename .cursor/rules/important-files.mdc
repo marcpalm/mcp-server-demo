@@ -1,5 +1,4 @@
 ---
-description: 
 globs: **/**
 alwaysApply: true
 ---
@@ -12,7 +11,13 @@ This file lists the important files for the MCP server project:
 - `package.json`: Project configuration and dependencies
 - `tsconfig.json`: TypeScript configuration
 - `src/main.ts`: Main entry point for the MCP server
-- `src/github.ts`: GitHub API integration functions
+- `src/github/client.ts`: GitHub client initialization
+- `src/github/issues.ts`: GitHub issue-related functions
+- `src/github/pullRequests.ts`: GitHub pull request-related functions
+- `src/github/index.ts`: GitHub module exports
+- `src/tools/issues.ts`: Issue-related MCP tools
+- `src/tools/pullRequests.ts`: Pull request-related MCP tools
+- `src/tools/index.ts`: Tool registration functions
 - `.env`: Environment variables (not tracked in git)
 - `.gitignore`: Git ignore rules
 

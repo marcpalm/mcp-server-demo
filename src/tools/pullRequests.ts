@@ -19,10 +19,25 @@ export function registerPullRequestTools(server: McpServer): void {
       pullNumber: z.number(),
     },
     async ({ owner, repo, pullNumber }) => {
-      const pr = await getPullRequest(octokit, { owner, repo }, pullNumber);
-      return {
-        content: [{ type: "text", text: JSON.stringify(pr, null, 2) }],
-      };
+      try {
+        console.log("Getting pull request:", { owner, repo, pullNumber });
+        const pr = await getPullRequest(octokit, { owner, repo }, pullNumber);
+        return {
+          content: [{ type: "text", text: JSON.stringify(pr, null, 2) }],
+        };
+      } catch (error) {
+        console.error("Error in getPullRequest tool:", error);
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${
+                error instanceof Error ? error.message : "Unknown error"
+              }`,
+            },
+          ],
+        };
+      }
     }
   );
 
@@ -37,15 +52,34 @@ export function registerPullRequestTools(server: McpServer): void {
       body: z.string(),
     },
     async ({ owner, repo, pullNumber, body }) => {
-      const comment = await createPullRequestComment(
-        octokit,
-        { owner, repo },
-        pullNumber,
-        body
-      );
-      return {
-        content: [{ type: "text", text: JSON.stringify(comment, null, 2) }],
-      };
+      try {
+        console.log("Creating pull request comment:", {
+          owner,
+          repo,
+          pullNumber,
+        });
+        const comment = await createPullRequestComment(
+          octokit,
+          { owner, repo },
+          pullNumber,
+          body
+        );
+        return {
+          content: [{ type: "text", text: JSON.stringify(comment, null, 2) }],
+        };
+      } catch (error) {
+        console.error("Error in createPullRequestComment tool:", error);
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${
+                error instanceof Error ? error.message : "Unknown error"
+              }`,
+            },
+          ],
+        };
+      }
     }
   );
 
@@ -62,15 +96,35 @@ export function registerPullRequestTools(server: McpServer): void {
       state: z.enum(["open", "closed"]).optional(),
     },
     async ({ owner, repo, pullNumber, ...update }) => {
-      const pr = await updatePullRequest(
-        octokit,
-        { owner, repo },
-        pullNumber,
-        update
-      );
-      return {
-        content: [{ type: "text", text: JSON.stringify(pr, null, 2) }],
-      };
+      try {
+        console.log("Updating pull request:", {
+          owner,
+          repo,
+          pullNumber,
+          update,
+        });
+        const pr = await updatePullRequest(
+          octokit,
+          { owner, repo },
+          pullNumber,
+          update
+        );
+        return {
+          content: [{ type: "text", text: JSON.stringify(pr, null, 2) }],
+        };
+      } catch (error) {
+        console.error("Error in updatePullRequest tool:", error);
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${
+                error instanceof Error ? error.message : "Unknown error"
+              }`,
+            },
+          ],
+        };
+      }
     }
   );
 
@@ -83,10 +137,25 @@ export function registerPullRequestTools(server: McpServer): void {
       repo: z.string(),
     },
     async ({ owner, repo }) => {
-      const prs = await listPullRequests(octokit, { owner, repo });
-      return {
-        content: [{ type: "text", text: JSON.stringify(prs, null, 2) }],
-      };
+      try {
+        console.log("Listing pull requests:", { owner, repo });
+        const prs = await listPullRequests(octokit, { owner, repo });
+        return {
+          content: [{ type: "text", text: JSON.stringify(prs, null, 2) }],
+        };
+      } catch (error) {
+        console.error("Error in listPullRequests tool:", error);
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: ${
+                error instanceof Error ? error.message : "Unknown error"
+              }`,
+            },
+          ],
+        };
+      }
     }
   );
 }

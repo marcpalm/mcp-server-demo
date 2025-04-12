@@ -14,7 +14,6 @@ registerAllTools(server);
 
 // Set up Express server for SSE
 const app = express();
-app.use(express.json());
 
 let transport: SSEServerTransport | undefined = undefined;
 

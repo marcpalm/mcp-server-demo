@@ -10,11 +10,16 @@ export async function getIssue(
   repo: RepoParams,
   issueNumber: number
 ) {
-  const { data } = await octokit.rest.issues.get({
-    ...repo,
-    issue_number: issueNumber,
-  });
-  return data;
+  try {
+    const { data } = await octokit.rest.issues.get({
+      ...repo,
+      issue_number: issueNumber,
+    });
+    return data;
+  } catch (error) {
+    console.error("Error getting issue:", { repo, issueNumber, error });
+    throw error;
+  }
 }
 
 export async function createIssueComment(
@@ -23,12 +28,21 @@ export async function createIssueComment(
   issueNumber: number,
   body: string
 ) {
-  const { data } = await octokit.rest.issues.createComment({
-    ...repo,
-    issue_number: issueNumber,
-    body,
-  });
-  return data;
+  try {
+    const { data } = await octokit.rest.issues.createComment({
+      ...repo,
+      issue_number: issueNumber,
+      body,
+    });
+    return data;
+  } catch (error) {
+    console.error("Error creating issue comment:", {
+      repo,
+      issueNumber,
+      error,
+    });
+    throw error;
+  }
 }
 
 export async function updateIssue(
@@ -42,18 +56,33 @@ export async function updateIssue(
     labels?: string[];
   }
 ) {
-  const { data } = await octokit.rest.issues.update({
-    ...repo,
-    issue_number: issueNumber,
-    ...update,
-  });
-  return data;
+  try {
+    const { data } = await octokit.rest.issues.update({
+      ...repo,
+      issue_number: issueNumber,
+      ...update,
+    });
+    return data;
+  } catch (error) {
+    console.error("Error updating issue:", {
+      repo,
+      issueNumber,
+      update,
+      error,
+    });
+    throw error;
+  }
 }
 
 export async function listIssues(octokit: Octokit, repo: RepoParams) {
-  const { data } = await octokit.rest.issues.listForRepo({
-    ...repo,
-    state: "all",
-  });
-  return data;
+  try {
+    const { data } = await octokit.rest.issues.listForRepo({
+      ...repo,
+      state: "all",
+    });
+    return data;
+  } catch (error) {
+    console.error("Error listing issues:", { repo, error });
+    throw error;
+  }
 }
