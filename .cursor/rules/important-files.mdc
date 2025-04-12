@@ -11,6 +11,8 @@ This file lists the important files for the MCP server project:
 - `package.json`: Project configuration and dependencies
 - `tsconfig.json`: TypeScript configuration
 - `src/main.ts`: Main entry point for the MCP server
+- `src/github.ts`: GitHub API integration functions
+- `.env`: Environment variables (not tracked in git)
 - `.gitignore`: Git ignore rules
 
 Note: If new important files are added to the project, they should be added to this list. 
