@@ -1,6 +1,12 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { z } from "zod";
+import * as dotenv from "dotenv";
+import express from "express";
+
+// Load environment variables from .env file
+dotenv.config();
+
 import * as github from "./github.js";
 
 // Create an MCP server
@@ -168,6 +174,28 @@ server.tool(
   }
 );
 
-// Start receiving messages on stdin and sending messages on stdout
-const transport = new StdioServerTransport();
-await server.connect(transport);
+// Set up Express server for SSE
+const app = express();
+app.use(express.json());
+
+let transport: SSEServerTransport | undefined = undefined;
+
+app.get("/sse", async (req, res) => {
+  transport = new SSEServerTransport("/messages", res);
+  await server.connect(transport);
+});
+
+app.post("/messages", async (req, res) => {
+  if (!transport) {
+    res.status(400);
+    res.json({ error: "No transport" });
+    return;
+  }
+  await transport.handlePostMessage(req, res);
+});
+
+// Start the server
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

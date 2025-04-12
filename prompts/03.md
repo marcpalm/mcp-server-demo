@@ -1,0 +1,47 @@
+## Problem
+
+Our server currently only works over `stdio`. We may want to convert it to work over SSE instead.
+
+## Supporting Information
+
+So far, I have only been able to get SSE working using the `express` framework.
+
+Latest version is `5.1.0`. Latest version of `@express/types` is `5.0.1`.
+
+```bash
+pnpm add express
+```
+
+```ts
+import express from "express";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+
+const app = express();
+
+let transport: SSEServerTransport | undefined = undefined;
+
+app.get("/sse", async (req, res) => {
+  transport = new SSEServerTransport("/messages", res);
+  await server.connect(transport);
+});
+
+app.post("/messages", async (req, res) => {
+  if (!transport) {
+    res.status(400);
+    res.json({ error: "No transport" });
+    return;
+  }
+  await transport.handlePostMessage(req, res);
+});
+
+app.listen(8080, () => {
+  console.log("Server is running on port 8080");
+});
+```
+
+## Steps To Complete
+
+- Install `express`
+- Remove the `stdio` transport.
+- Add the `sse` transport.
+- Ensure that all major files are added to the `.cursor/rules/important-files.mdc` file.
