@@ -1,0 +1,77 @@
+## Problem
+
+Our MCP server currently doesn't do anything. We want to hook it up to GitHub so that it can respond to issues and pull requests.
+
+## Supporting Information
+
+### Octokit
+
+We are using Octokit to interact with GitHub.
+
+`pnpm add octokit`
+
+Octokit methods should be put in their own file, in `src/github.ts`.
+
+```ts
+import { Octokit } from "octokit";
+
+const octokit = new Octokit({ auth: `personal-access-token123` });
+```
+
+Environment variables can be put in a `.env` file.
+
+### `tsx` and `.env`
+
+You can pass `.env` to `tsx` by using the `--env-file` flag.
+
+```bash
+tsx watch --env-file=.env src/main.ts
+```
+
+### Always Declare Tool Descriptions.
+
+When calling `server.tool()`, you can pass in both a name and a description. For instance:
+
+```ts
+server.tool(
+  "createPullRequestComment",
+  "Create a comment on a pull request",
+  {
+    owner: z.string(),
+    repo: z.string(),
+    pullNumber: z.number(),
+    body: z.string(),
+  },
+  async ({ owner, repo, pullNumber, body }) => {
+    const comment = await github.createPullRequestComment(
+      { owner, repo },
+      pullNumber,
+      body
+    );
+    return {
+      content: [{ type: "text", text: JSON.stringify(comment, null, 2) }],
+    };
+  }
+);
+```
+
+This should be done for all tools, since it helps the MCP client understand the tool and its capabilities.
+
+## Steps To Complete
+
+- Ensure that `.env` is added to the `.gitignore` file.
+- Get the user to add a GitHub token to `.env`.
+- Ensure that `.env` is being loaded into the environment when running the `dev` script.
+- Install `octokit` as a dependency.
+- Create functions for issues and pull requests:
+  - `getIssue`: Get an issue by number.
+  - `getPullRequest`: Get a pull request by number.
+  - `createIssueComment`: Create a comment on an issue.
+  - `createPullRequestComment`: Create a comment on a pull request.
+  - `updateIssue`: Update an issue.
+  - `updatePullRequest`: Update a pull request.
+  - `listIssues`: List issues for a repository.
+  - `listPullRequests`: List pull requests for a repository.
+- Remove the demo tools from the existing MCP server.
+- Add those tools to the MCP server.
+- Ensure that all major files are added to the `.cursor/rules/important-files.mdc` file.

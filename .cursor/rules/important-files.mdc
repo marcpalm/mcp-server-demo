@@ -1,0 +1,16 @@
+---
+globs: **/**
+alwaysApply: true
+---
+
+# Important Files
+
+This file lists the important files for the MCP server project:
+
+- `.cursor/rules/important-files.mdc`: This file, tracking important project files
+- `package.json`: Project configuration and dependencies
+- `tsconfig.json`: TypeScript configuration
+- `src/main.ts`: Main entry point for the MCP server
+- `.gitignore`: Git ignore rules
+
+Note: If new important files are added to the project, they should be added to this list. 

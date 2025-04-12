@@ -1,0 +1,153 @@
+## Problem
+
+We want to set up a new MCP server, written in TypeScript. We are starting from an empty directory.
+
+We are writing this in Cursor, so recording the important files in a `.cursor/rules/important-files.mdc` file is important.
+
+We need to set up the basic file system for the project, install necessary dependencies, and set up the project structure.
+
+## Supporting Information
+
+### Tools
+
+#### `pnpm`
+
+Use `pnpm` as the package manager.
+
+### File Structure
+
+Recommended file structure:
+
+#### `.cursor/rules/important-files.mdc`
+
+A file that lists the important files for the project, which should be included in every chat.
+
+Use the `mdc` format, which is a markdown format with these frontmatter fields:
+
+```md
+---
+globs: **/**
+alwaysApply: true
+---
+
+...content goes here...
+```
+
+Make sure to add a directive at the end of the file that if new files are added, they should be added to the `important-files.mdc` file.
+
+#### `package.json`
+
+The package.json file for the project.
+
+Recommended scripts:
+
+`build`: Builds the project using `tsc`.
+`dev`: Runs the project in development mode using `tsx watch src/main.ts`.
+
+Dependencies:
+
+- `@modelcontextprotocol/sdk`: The MCP SDK. Latest version is `0.9.0`.
+- `zod`: A schema declaration and validation library for TypeScript.
+
+Dev dependencies:
+
+- `tsx`: A faster version of `ts-node` that is optimized for the CLI.
+- `typescript`: The TypeScript compiler, latest version: `5.8`
+- `@types/node`: The types for Node.js, for 22+
+
+`bin` should be set to `dist/main.js`.
+
+`type` should be set to `module`.
+
+#### `tsconfig.json`
+
+The TypeScript configuration file for the project. Here is the recommended configuration from Matt Pocock's TSConfig cheat sheet.
+
+```jsonc
+{
+  "compilerOptions": {
+    /* Base Options: */
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "es2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+
+    /* Strictness */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+
+    /* If transpiling with TypeScript: */
+    "module": "NodeNext",
+    "outDir": "dist",
+    "rootDir": "src",
+    "sourceMap": true,
+
+    /* AND if you're building for a library: */
+    "declaration": true,
+
+    /* If your code doesn't run in the DOM: */
+    "lib": ["es2022"]
+  },
+  "include": ["src"]
+}
+```
+
+#### `src/main.ts`
+
+The entry point for the project.
+
+```ts
+import {
+  McpServer,
+  ResourceTemplate,
+} from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+
+// Create an MCP server
+const server = new McpServer({
+  name: "Demo",
+  version: "1.0.0",
+});
+
+// Add an addition tool
+server.tool("add", { a: z.number(), b: z.number() }, async ({ a, b }) => ({
+  content: [{ type: "text", text: String(a + b) }],
+}));
+
+// Add a dynamic greeting resource
+server.resource(
+  "greeting",
+  new ResourceTemplate("greeting://{name}", { list: undefined }),
+  async (uri, { name }) => ({
+    contents: [
+      {
+        uri: uri.href,
+        text: `Hello, ${name}!`,
+      },
+    ],
+  })
+);
+
+// Start receiving messages on stdin and sending messages on stdout
+const transport = new StdioServerTransport();
+await server.connect(transport);
+```
+
+#### `.gitignore`
+
+A file that lists the files to ignore in the project. `dist` should be ignored since it is the output directory.
+
+## Steps To Complete
+
+- Create the `package.json` file with the recommended scripts and dependencies.
+- Use a `pnpm add` command to install the dependencies so that they are pinned to the current version. Do NOT use `latest` or `next`.
+- Install the dependencies.
+- Create the `tsconfig.json` file with the recommended configuration.
+- Create the other files described above.
+- Run `pnpm build` to build the project.
