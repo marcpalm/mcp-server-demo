@@ -6,8 +6,7 @@
   "bin": "dist/main.js",
   "scripts": {
     "build": "tsc",
-    "dev": "npx tsx watch src/main.ts",
-    "start": "node dist/main.js"
+    "dev": "npx tsx watch --env-file=.env src/main.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.9.0",
